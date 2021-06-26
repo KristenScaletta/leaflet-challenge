@@ -2,7 +2,6 @@ var earthquakeMap = L.map("map", {
     center: [37.7749, -122.4194],
     zoom: 8,
   });
-  console.log("hi");
   L.tileLayer(
     "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
     {
@@ -21,36 +20,56 @@ var earthquakeMap = L.map("map", {
   d3.json(url).then(init);
   function init(data) {
     console.log(data);
-    function styleInfo(feature) {
-      return {
-        opacity: 1,
-        fillOpacity: 1,
-        fillColor: Color(feature.geometry.coordinates[2]),
-        color: "#000000",
-        radius: Radius(feature.properties.mag),
-        stroke: true,
-        weight: 0.5,
-        coord: Coordinates(feature.geometry.coordinates),
-        depth: Depth(feature.geometry.coordinates[2])
-      };
+    
     }
+//Help from a classmate
+    function markerSize(mag) {
+      return mag * 2;
+  };
     //Set color based on depth
-    function Color(fillColor) {
+    function Color(depth) {
+      depth = feature.geometry.coordinates[2]
       switch (true) {
-        case depth > 5:
+        case depth > 100:
           return "#03221d";
-        case depth > 4:
+          break;
+        case depth > 80:
           return "#491433";
-        case depth > 3:
+          break;
+        case depth > 70:
           return "#85245d";
-        case depth > 2:
+          break;
+        case depth > 50:
           return "#d44f0c";
-        case depth > 1:
+          break;
+        case depth > 30:
           return "#b8860b";
+          break;
         default:
           return "#ffcd53";
       }
-    }
+    };
+
+      let style = {
+        opacity: 1,
+        fillOpacity: 1,
+        fillColor: blue,
+        color: "#000000",
+        radius: 4,
+        stroke: true,
+        weight: 0.5,
+        //coord: Coordinates(feature.geometry.coordinates),
+        //depth: Depth(feature.geometry.coordinates[2])
+      };
+
+      function onEachFeature (feature, layer) {
+        layer.bindPopup(
+          "Earthquake Magnitude: " +
+            feature.properties.mag +
+            "<br>Earthquake Location: " +
+            feature.properties.place)
+        
+    };
     //Set size based on radius
     function Radius(radius) {
       switch (true) {
@@ -73,14 +92,10 @@ var earthquakeMap = L.map("map", {
       pointToLayer: function (feature, coord) {
         return L.circleMarker(coord);
       },
-      style: styleInfo,
-      onEachFeature: function (feature, layer) {
-        layer.bindPopup(
-          "Earthquake Magnitude: " +
-            feature.properties.mag +
-            "<br>Earthquake Location: " +
-            feature.properties.place
-        );
-      },
-    }).addTo(earthquakeMap);
-  }
+      style: style,
+      
+      addTo(earthquakeMap)
+  
+    }
+  
+  );
