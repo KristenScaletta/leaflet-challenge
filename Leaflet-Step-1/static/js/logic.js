@@ -2,6 +2,7 @@ var earthquakeMap = L.map("map", {
     center: [37.7749, -122.4194],
     zoom: 8,
   });
+
   L.tileLayer(
     "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
     {
@@ -14,62 +15,49 @@ var earthquakeMap = L.map("map", {
       accessToken: API_KEY,
     }
   ).addTo(earthquakeMap);
+
+  //var legend = L.control
+  //({
+    //position: "bottomright"
+  //}).addTo(earthquakeMap);
+
   var url =
     "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson";
   //Get the radius
   d3.json(url).then(init);
   function init(data) {
     console.log(data);
-    
-    }
-//Help from a classmate
-    function markerSize(mag) {
-      return mag * 2;
-  };
-    //Set color based on depth
-    function Color(depth) {
-      depth = feature.geometry.coordinates[2]
-      switch (true) {
-        case depth > 100:
-          return "#03221d";
-          break;
-        case depth > 80:
-          return "#491433";
-          break;
-        case depth > 70:
-          return "#85245d";
-          break;
-        case depth > 50:
-          return "#d44f0c";
-          break;
-        case depth > 30:
-          return "#b8860b";
-          break;
-        default:
-          return "#ffcd53";
-      }
-    };
-
-      let style = {
+    function styleInfo(feature) {
+      return {
         opacity: 1,
         fillOpacity: 1,
-        fillColor: blue,
+        fillColor: Color(feature.geometry.coordinates[2]),
         color: "#000000",
-        radius: 4,
+        radius: Radius(feature.properties.mag),
         stroke: true,
         weight: 0.5,
         //coord: Coordinates(feature.geometry.coordinates),
         //depth: Depth(feature.geometry.coordinates[2])
       };
-
-      function onEachFeature (feature, layer) {
-        layer.bindPopup(
-          "Earthquake Magnitude: " +
-            feature.properties.mag +
-            "<br>Earthquake Location: " +
-            feature.properties.place)
-        
-    };
+    }
+    console.log(features.geometry.mag);
+    //Set color based on depth
+    function Color(depth) {
+      switch (true) {
+        case depth > 100:
+          return "#03221d";
+        case depth > 90:
+          return "#491433";
+        case depth > 80:
+          return "#85245d";
+        case depth > 70:
+          return "#d44f0c";
+        case depth > 60:
+          return "#b8860b";
+        default:
+          return "#ffcd53";
+      }
+    }
     //Set size based on radius
     function Radius(radius) {
       switch (true) {
@@ -89,13 +77,17 @@ var earthquakeMap = L.map("map", {
     }
     //Add marker and bind popup
     L.geoJson(data, {
-      pointToLayer: function (feature, coord) {
-        return L.circleMarker(coord);
+      pointToLayer: function (feature, latlng) {
+        return L.circleMarker(latlng);
       },
-      style: style,
-      
-      addTo(earthquakeMap)
-  
-    }
-  
-  );
+      style: styleInfo,
+      onEachFeature: function (feature, layer) {
+        layer.bindPopup(
+          "Earthquake Magnitude: " +
+            feature.properties.mag +
+            "<br>Earthquake Location: " +
+            feature.properties.place
+        );
+      },
+    }).addTo(earthquakeMap);
+  }
