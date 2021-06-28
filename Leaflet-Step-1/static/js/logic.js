@@ -1,6 +1,6 @@
 var earthquakeMap = L.map("map", {
     center: [37.7749, -122.4194],
-    zoom: 8,
+    zoom: 4,
   });
 
   L.tileLayer(
@@ -33,26 +33,25 @@ var earthquakeMap = L.map("map", {
         fillOpacity: 1,
         fillColor: Color(feature.geometry.coordinates[2]),
         color: "#000000",
-        radius: Radius(feature.properties.mag),
+        radius: Radius(feature.properties.mag * 2),
         stroke: true,
         weight: 0.5,
-        //coord: Coordinates(feature.geometry.coordinates),
-        //depth: Depth(feature.geometry.coordinates[2])
+       
       };
     }
-    console.log(features.geometry.mag);
+    
     //Set color based on depth
     function Color(depth) {
       switch (true) {
-        case depth > 100:
+        case depth > 50:
           return "#03221d";
-        case depth > 90:
+        case depth > 40:
           return "#491433";
-        case depth > 80:
+        case depth > 30:
           return "#85245d";
-        case depth > 70:
+        case depth > 20:
           return "#d44f0c";
-        case depth > 60:
+        case depth > 10:
           return "#b8860b";
         default:
           return "#ffcd53";
