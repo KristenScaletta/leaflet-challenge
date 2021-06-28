@@ -16,13 +16,16 @@ var earthquakeMap = L.map("map", {
     }
   ).addTo(earthquakeMap);
 
-  //var legend = L.control
-  //({
-    //position: "bottomright"
-  //}).addTo(earthquakeMap);
+
 
   var url =
     "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson";
+
+  
+    var legend = L.control
+    ({
+      position: "bottomright"
+    });
   //Get the radius
   d3.json(url).then(init);
   function init(data) {
@@ -36,7 +39,8 @@ var earthquakeMap = L.map("map", {
         radius: Radius(feature.properties.mag * 2),
         stroke: true,
         weight: 0.5,
-       
+        //coord: Coordinates(feature.geometry.coordinates),
+        //depth: Depth(feature.geometry.coordinates[2])
       };
     }
     
